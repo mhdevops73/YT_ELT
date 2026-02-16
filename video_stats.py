@@ -68,7 +68,7 @@ def get_video_ids(playistId):
     except requests.exceptions.RequestException as e:
         raise e
 
-
+#extract video data based on playlists
 def extract_video_data(video_ids):
     #declare empty list to store all videos data variables
     extracted_data=[]
@@ -113,6 +113,7 @@ def extract_video_data(video_ids):
     except requests.exceptions.RequestException as e:
         raise e
 
+#write to a json file
 def save_to_json(extracted_data):
     file_path = f"./data/YT_data_{date.today()}.json"
 
