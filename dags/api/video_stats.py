@@ -2,15 +2,25 @@
 import requests
 import json
 import os #native to python
+
+from airflow.models import Variable
 from datetime import date
 from dotenv import load_dotenv #install of dotenv
-#load content of .env file
-load_dotenv(dotenv_path="./.env")
+from airflow.decorators import task
 
-API_KEY = os.getenv("API_KEY")
-CHANNEL_HANDLE = os.getenv("CHANNEL_HANDLE")
+
+#load content of .env file
+#load_dotenv(dotenv_path="./.env")
+#API_KEY = os.getenv("API_KEY")
+#CHANNEL_HANDLE = os.getenv("CHANNEL_HANDLE")
+
+#These vars are defined in the dockr compose file
+API_KEY = Variable.get("API_KEY")
+CHANNEL_HANDLE = Variable.get("CHANNEL_HANDLE")
+
 maxResults = 50
 
+@task()
 def get_channel_playlist_id():
 
     try:
@@ -36,6 +46,7 @@ def get_channel_playlist_id():
 playlistId = get_channel_playlist_id()
 
 #get list of video ids
+@task()
 def get_video_ids(playistId):
     video_ids = []
     pageToken = None
@@ -69,6 +80,7 @@ def get_video_ids(playistId):
         raise e
 
 #extract video data based on playlists
+@task()
 def extract_video_data(video_ids):
     #declare empty list to store all videos data variables
     extracted_data=[]
@@ -114,6 +126,7 @@ def extract_video_data(video_ids):
         raise e
 
 #write to a json file
+@task()
 def save_to_json(extracted_data):
     file_path = f"./data/YT_data_{date.today()}.json"
 
